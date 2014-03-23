@@ -27,5 +27,36 @@ exports.loadFiles = function(dir, param) {
     return files;
 }
 
+exports.randomHex = function (x) {
+    var num = Math.ceil(x/2);
+    var odd = x % 2 !== 0;
+    var buf = crypto.pseudoRandomBytes(num);
+    var hexVal = buf.toString('hex');
+    return (odd) ? hexVal.substring(1) : hexVal;
+}
+
+exports.randomNumberString = function(x) {
+    var ans = '';
+    for (var i = 0; i < x; i++) {
+        ans += Math.floor(Math.random() * 10);
+    }
+    return ans;
+}
+
+exports.guid = function(x) {
+    if (!x) x = 8;
+    var s = "";
+    for (var i = 0; i < x/4; i++) s += randomHex(4);
+    return s;
+}
+
+exports.objectId = function() {
+    return this.guid(24);
+}
+
+exports.authToken = function() {
+    return this.guid(128);
+}
+
 // load all utils in this folder
 _.extend(module.exports, this.loadFiles(__dirname));

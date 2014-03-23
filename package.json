@@ -9,7 +9,8 @@
         "express": "4.x",
         "mongoose": "3.x",
         "async": "latest",
-        "underscore": "latest"
+        "underscore": "latest",
+        "mongoose-schema-extend": "latest"
     },
 
     "scripts": {

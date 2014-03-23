@@ -14,6 +14,12 @@ module.exports = function() {
         // start the server
         var app = require('./server')();
 
+        // load all of the models
+        require('./models')();
+
+        // load all of the controllers
+        require('./controllers')(app);
+
     }, function(err){
         utils.logger.error('Lost connection to databse');
     });
