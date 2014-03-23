@@ -17,5 +17,7 @@ module.exports = function(next, disconnect) {
     mongoose.connect(config.db, dbOptions, next);
 
     // handle disconnect
-    mongoose.connection.on('disconnected', disconnect);
+    mongoose.connection.on('disconnected', function(err){
+        if (disconnect) disconnect();
+    });
 }

@@ -22,8 +22,5 @@ module.exports = function() {
 
         // load all of the controllers
         require('./controllers')(app);
-
-    }, function(err){
-        utils.logger.error('Lost connection to databse');
     });
 }
