@@ -1,0 +1,21 @@
+{
+    "name": "Chat",
+    "version": "0.0.1",
+    "description": "A fast chat application with node.js and redis",
+    "main": "server.js",
+
+    "dependencies": {
+        "ws": "latest",
+        "express": "latest",
+        "mongoose": "latest",
+        "async": "latest",
+        "underscore": "latest"
+    },
+
+    "scripts": {
+    "test": "test"
+    },
+
+    "author": "Andrew Barba",
+    "license": "ISC"
+}
