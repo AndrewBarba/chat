@@ -19,6 +19,6 @@ if (cluster.isMaster) {
     });
 } else {
 
-    // run server
+    // start app
     require('./app')();
 }

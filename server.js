@@ -1,3 +1,3 @@
 
-// start the app
+// start app
 require('./app')();
