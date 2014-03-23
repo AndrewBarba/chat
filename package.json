@@ -6,8 +6,8 @@
 
     "dependencies": {
         "ws": "latest",
-        "express": "latest",
-        "mongoose": "latest",
+        "express": "4.x",
+        "mongoose": "3.x",
         "async": "latest",
         "underscore": "latest"
     },
