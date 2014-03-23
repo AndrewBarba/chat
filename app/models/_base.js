@@ -1,13 +1,24 @@
 var mongoose = require('mongoose')
   , Schema = mongoose.Schema
   , _ = require('underscore')
-  // , extend = require('mongoose-schema-extend')
   , utils = require('../utils')
+
+var BASE_SCHEME = {
+    _id       : { type: String, default: utils.objectId, index: { unique: true } },
+    modified  : { type: Date, default: Date.now, set: setDate, get: getDate },
+    created   : { type: Date, default: Date.now, set: setDate, get: getDate, index: true }
+}
+
+var HIDE = [ '__v', '__t', '_id' ];
 
 var OPTIONS = {
     virtuals: true,
     getters: true,
-    hide: ['__v', '__t', '_id'] // fields to hide
+    transform: function(doc, ret, options) {
+        HIDE.forEach(function(key){
+            delete ret[key]
+        });
+    }
 }
 
 /* =========================================================================
@@ -16,28 +27,26 @@ var OPTIONS = {
  *   
  * ========================================================================= */
 
-var base_data = {
-  _id       : { type: String, default: utils.objectId, index: { unique: true } },
-  modified  : { type: Date, default: Date.now, set: setDate },
-  created   : { type: Date, default: Date.now, set: setDate, index: true }
-};
+function getSchema(data, options) {
+    
+    // build schema
+    var scheme = _.extend({}, BASE_SCHEME, data);
+    var schema = new Schema(scheme, defaultOptions(options));
 
-exports.extend = function(data) {
-
-    var scheme = _.extend({}, base_data, data);
-    var Schema = new mongoose.Schema(scheme, defaultOptions());
-
-    Schema.pre('save', function(next) {
-        if (this.isModified()) {
-            this.modified = Date.now();
-        }
+    // always update modified date on save
+    schema.pre('save', function(next) {
+        if (this.isModified()) this.modified = Date.now();
         next();
     });
 
-    Schema.set('toJSON', OPTIONS);
-    Schema.set('toObject', OPTIONS);
+    return schema;
+}
 
-    _.extend(Schema.statics, {
+exports.extend = function(data, options) {
+
+    var schema = getSchema(data, options);
+
+    _.extend(schema.statics, {
         stream: function(options){
             if (!this.streamSchema) return null;
 
@@ -54,14 +63,12 @@ exports.extend = function(data) {
         }
     });
 
-    return Schema;
+    return schema;
 }
 
 exports.cappedSchema = function(data, size, options) {
-    var scheme = _.extend({}, base_data, data);
-    options = _.extend({capped:size}, defaultOptions(), options);
-    var Schema = new mongoose.Schema(scheme, options);
-    return Schema;
+    var schema = getSchema(data, _.extend({capped:size}, options));
+    return schema;
 }
 
  /* =========================================================================
@@ -70,11 +77,11 @@ exports.cappedSchema = function(data, size, options) {
  *   
  * ========================================================================= */
 
-function defaultOptions() {
-    return {
+function defaultOptions(options) {
+    return _.extend({
         toJSON: OPTIONS,
         toObject: OPTIONS
-    }
+    }, options);
 }
 
 function getDate(date) {

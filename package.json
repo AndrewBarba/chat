@@ -1,21 +1,20 @@
 {
     "name": "Chat",
     "version": "0.0.1",
-    "description": "A fast chat application with node.js and redis",
-    "main": "server.js",
+    "description": "A fast chat server built with node.js and MongoDB",
+    "main": "cluster.js",
 
     "dependencies": {
         "ws": "latest",
         "express": "4.x",
         "body-parser": "latest",
-        "mongoose": "3.x",
+        "mongoose": "latest",
         "async": "latest",
-        "underscore": "latest",
-        "mongoose-schema-extend": "latest"
+        "underscore": "latest"
     },
 
     "scripts": {
-    "test": "test"
+        "test": "test"
     },
 
     "author": "Andrew Barba",

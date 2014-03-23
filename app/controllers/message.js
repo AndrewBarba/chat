@@ -30,9 +30,19 @@ exports.getUnreadMessages = function(req, res, next) {
         });
 }
 
+exports.getMessages = function(req, res, next) {
+    Message
+        .find({})
+        .sort('created')
+        .exec(function(err, docs){
+            if (err) return next(err);
+            res.json(docs);
+        });
+}
+
 exports.sendMessage = function(req, res, next) {
 
-    var from = req.user.id || req.body.from;
+    var from = req.user.id;
     var text = req.body.message;
     var to = req.body.to;
 
