@@ -1,5 +1,6 @@
 
 var express = require('express')
+  , bodyParser = require('body-parser')
   , http = require('http')
   , utils = require('../utils')
 
@@ -7,17 +8,21 @@ module.exports = function() {
 
     // create express app
     var app = express();
-    var server = http.createServer(app);
 
     // default middle ware
     app.use(defaultHeaders);
 
+    // parse request body
+    app.use(bodyParser()); 
+
     // Start the server
+    var server = http.createServer(app);
     var port = process.env.PORT || 3000;
     server.listen(port, function() {
         utils.logger('Listening on port: '+port)
     });
 
+    app.server = server;
     return app;
 }
 

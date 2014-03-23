@@ -3,12 +3,11 @@ var Message = require('../models/message')
   , User = require('../models/user')
   , utils = require('../utils')
 
-exports.stream = function(socket) {
-    // Message stream
+exports.messageStream = function(socket) {
     Message
         .stream()
         .on('data', function (message) {
-            socket.broadcastUser(message.to, doc.toJSON());    
+            socket.send(message.to, message.toJSON());    
         })
         .on('error', function (err) {
             utils.logger.error(err);
@@ -33,18 +32,12 @@ exports.getUnreadMessages = function(req, res, next) {
 
 exports.sendMessage = function(req, res, next) {
 
-    var from = req.user.id;
+    var from = req.user.id || req.body.from;
     var text = req.body.message;
     var to = req.body.to;
 
-    var message = new Message({
-        'to': to,
-        'from': from,
-        'message': text
-    });
-
-    message.save(function(err, doc){
-        return next(err);
+    Message.create(to, from, text, function(err, doc){
+        if (err) return next(err);
         res.json(201, doc);
     });
 }

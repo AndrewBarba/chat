@@ -14,6 +14,9 @@ module.exports = function() {
         // start the server
         var app = require('./server')();
 
+        // open up sockets
+        require('./sockets').open(app.server);
+
         // load all of the models
         require('./models')();
 

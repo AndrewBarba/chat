@@ -1,6 +1,7 @@
 
 var utils = require('../utils')
-  , User = require('../models/user');
+  , User = require('../models/user')
+  , sockets = require('../sockets')
 
 module.exports = function(app) {
 
@@ -19,6 +20,9 @@ module.exports = function(app) {
     app.put('/message/:id/received', controllers.message.messageRecieved);
     app.put('/message/:id/received', controllers.message.messageRead);
     app.get('/message/new', controllers.message.getUnreadMessages);
+
+    // message stream
+    sockets.listen('/message', null, controllers.message.messageStream);
 
     // respond to 404's
     app.use(function(req, res, next){

@@ -1,6 +1,8 @@
 
 var _ = require('underscore')
   , fs = require('fs')
+  , crypto = require('crypto')
+  , _this = module.exports
 
 exports.loadFiles = function(dir, param) {
     var files = {};
@@ -46,16 +48,16 @@ exports.randomNumberString = function(x) {
 exports.guid = function(x) {
     if (!x) x = 8;
     var s = "";
-    for (var i = 0; i < x/4; i++) s += randomHex(4);
+    for (var i = 0; i < x/4; i++) s += _this.randomHex(4);
     return s;
 }
 
 exports.objectId = function() {
-    return this.guid(24);
+    return _this.guid(24);
 }
 
 exports.authToken = function() {
-    return this.guid(128);
+    return _this.guid(128);
 }
 
 // load all utils in this folder
