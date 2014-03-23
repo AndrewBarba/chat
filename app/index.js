@@ -3,6 +3,8 @@ var utils = require('./utils');
 
 module.exports = function() {
     
+    utils.logger.info('Starting app...');
+
     // connect to the database
     require('./database')(function(err){
         

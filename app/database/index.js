@@ -13,7 +13,6 @@ module.exports = function(next, disconnect) {
     };
 
     // connect to database
-    utils.logger.info('Connecting: '+config.db);
     mongoose.connect(config.db, dbOptions, next);
 
     // handle disconnect
