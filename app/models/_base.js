@@ -25,16 +25,19 @@ var base_data = {
 exports.extend = function(data) {
 
     var scheme = _.extend({}, base_data, data);
-    var BaseSchema = new mongoose.Schema(scheme, defaultOptions());
+    var Schema = new mongoose.Schema(scheme, defaultOptions());
 
-    BaseSchema.pre('save', function(next) {
+    Schema.pre('save', function(next) {
         if (this.isModified()) {
             this.modified = Date.now();
         }
         next();
     });
 
-    _.extend(BaseSchema.statics, {
+    Schema.set('toJSON', OPTIONS);
+    Schema.set('toObject', OPTIONS);
+
+    _.extend(Schema.statics, {
         stream: function(options){
             if (!this.streamSchema) return null;
 
@@ -51,7 +54,7 @@ exports.extend = function(data) {
         }
     });
 
-    return BaseSchema;
+    return Schema;
 }
 
 exports.cappedSchema = function(data, size, options) {
