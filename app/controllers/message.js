@@ -31,9 +31,14 @@ exports.getUnreadMessages = function(req, res, next) {
         });
 }
 
-exports.getMessages = function(req, res, next) {
+exports.getMessagesFromUser = function(req, res, next) {
+    
+    var id = req.user.id;
+    var userId = req.params.id;
+
     Message
-        .find({})
+        .find({ to: id, from: userId })
+        .limit(50)
         .sort('created')
         .exec(function(err, docs){
             if (err) return next(err);

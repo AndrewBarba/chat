@@ -14,7 +14,7 @@ module.exports = function(app) {
     app.use(auth.getUser);
 
     // root
-    app.get('/', controllers.root.root);
+    app.get('/', controllers.root.index);
     app.get('/status', controllers.root.status);
 
     // messages
@@ -22,6 +22,7 @@ module.exports = function(app) {
     app.put('/message/:id/received', auth.requireUser, controllers.message.messageRecieved);
     app.put('/message/:id/read', auth.requireUser, controllers.message.messageRead);
     app.get('/message/new', auth.requireUser, controllers.message.getUnreadMessages);
+    app.get('/message/user/:id', auth.requireUser, controllers.message.getMessagesFromUser);
 
     // user
     app.get('/user', auth.requireUser, controllers.user.getCurrentUser);
