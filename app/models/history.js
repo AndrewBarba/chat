@@ -39,6 +39,7 @@ _.extend(HistorySchema.methods, {
         var message = this.toObject().message;
         if (this.action == 'send') {
             socket.send(message.to, message);
+            socket.send(message.from, message);
         } else if (this.action == 'received') {
             socket.send(message.from, message);
         } else if (this.action == 'read') {
