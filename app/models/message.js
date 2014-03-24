@@ -39,20 +39,24 @@ _.extend(MessageSchema.statics, {
         message.save(next);
     },
 
-    markReceived: function(messageId, next) {
+    markReceived: function(messageId, userId, next) {
+        var query = { _id: messageId, to: userId };
         var update = { received: true };
-        Message.findByIdAndUpdate(messageId, update, function(err, doc){
+        Message.findOneAndUpdate(query, update, function(err, doc){
             if (err) return next(err);
+            if (!doc) return next(new Error('You must be the reciever to mark a message as received'));
             History.logMessage(doc, 'received', function(err){
                 next(null, doc);
             });
         });
     },
 
-    markRead: function(messageId, next) {
+    markRead: function(messageId, userId, next) {
+        var query = { _id: messageId, to: userId };
         var update = { read: true };
-        Message.findByIdAndUpdate(messageId, update, function(err, doc){
+        Message.findOneAndUpdate(query, update, function(err, doc){
             if (err) return next(err);
+            if (!doc) return next(new Error('You must be the reciever to mark a message as read'));
             History.logMessage(doc, 'read', function(err){
                 next(null, doc);
             });

@@ -20,7 +20,7 @@ module.exports = function(app) {
     // messages
     app.post('/message', auth.requireVerifiedUser, controllers.message.sendMessage);
     app.put('/message/:id/received', auth.requireUser, controllers.message.messageRecieved);
-    app.put('/message/:id/received', auth.requireUser, controllers.message.messageRead);
+    app.put('/message/:id/read', auth.requireUser, controllers.message.messageRead);
     app.get('/message/new', auth.requireUser, controllers.message.getUnreadMessages);
 
     // user

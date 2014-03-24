@@ -55,7 +55,7 @@ exports.sendMessage = function(req, res, next) {
 
 exports.messageRecieved = function(req, res, next) {
     var messageId = req.params.id;
-    Message.markReceived(messageId, function(err, doc){
+    Message.markReceived(messageId, req.user.id, function(err, doc){
         if (err) return next(err);
         res.json(doc);
     });
@@ -63,7 +63,7 @@ exports.messageRecieved = function(req, res, next) {
 
 exports.messageRead = function(req, res, next) {
     var messageId = req.params.id;
-    Message.markRead(messageId, function(err, doc){
+    Message.markRead(messageId, req.user.id, function(err, doc){
         if (err) return next(err);
         res.json(doc);
     });
