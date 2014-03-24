@@ -3,6 +3,7 @@ var mongoose = require("mongoose")
   , BaseSchema = require('./_base')
   , utils = require('../utils')
   , _ = require('underscore')
+  , History = require('./history')
 
 var scheme = {
     to: { type: String, ref: 'User', index: true, required: true },
@@ -13,7 +14,18 @@ var scheme = {
 }
 
 var MessageSchema = BaseSchema.extend(scheme);
-var MessageCappedSchema = BaseSchema.cappedSchema(scheme, (64 * 1024 * 1024)); // 64 megabytes
+
+MessageSchema.pre('save', function(next){
+    if (this.isNew) {
+        History.logMessage(this, 'send', next);
+    } else if (this.isModified('received')) {
+        History.logMessage(this, 'received', next);
+    } else if (this.isModified('read')) {
+        History.logMessage(this, 'read', next);
+    } else {
+        next();
+    }
+});
 
 _.extend(MessageSchema.statics, {
     create: function(to, from, message, next) {
@@ -24,17 +36,10 @@ _.extend(MessageSchema.statics, {
         };
 
         var message = new Message(data);
-        var streamMessage = new MessageStream(data);
-
-        streamMessage.save(function(err){
-            if (err) return next(err);
-            message.save(next);
-        });
+        message.save(next);
     }
-})
+});
 
-var MessageStream = mongoose.model('MessageStream', MessageCappedSchema);
 var Message = mongoose.model('Message', MessageSchema);
-Message.streamSchema = MessageStream;
 
 module.exports = Message;

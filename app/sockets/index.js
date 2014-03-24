@@ -21,11 +21,9 @@ function TLWebSocket(path, verify) {
     this.ws.on('connection', function(ws){
         var path = parsePath(ws.upgradeReq.url);
         if (_this.path == path) {
-            var auth = parseAuth(ws.upgradeReq.url);
-            User.findByAuthToken(auth, function(err, doc){
-                utils.logger('New Socket Connection: '+path);
-                _this.sockets[doc.id] = ws; 
-            });
+            var user = ws.upgradeReq.user;
+            _this.sockets[user.id] = ws; 
+            utils.logger('New Socket Connection: '+path+' '+user.id);
         }
     });
 

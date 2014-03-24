@@ -2,12 +2,13 @@
 var Message = require('../models/message')
   , User = require('../models/user')
   , utils = require('../utils')
+  , History = require('../models/history')
 
 exports.messageStream = function(socket) {
-    Message
+    History
         .stream()
-        .on('data', function (message) {
-            socket.send(message.to, message.toJSON());    
+        .on('data', function (history) {
+            history.notify(socket);   
         })
         .on('error', function (err) {
             utils.logger.error(err);
@@ -59,7 +60,9 @@ exports.messageRecieved = function(req, res, next) {
 
     Message.findByIdAndUpdate(messageId, update, function(err, doc){
         if (err) return next(err);
-        res.json(doc);
+        History.logMessage(doc, 'received', function(){
+            res.json(doc);
+        });
     });
 }
 
@@ -70,6 +73,8 @@ exports.messageRead = function(req, res, next) {
 
     Message.findByIdAndUpdate(messageId, update, function(err, doc){
         if (err) return next(err);
-        res.json(doc);
+        History.logMessage(doc, 'read', function(){
+            res.json(doc);
+        });
     });
 }

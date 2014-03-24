@@ -43,26 +43,7 @@ function getSchema(data, options) {
 }
 
 exports.extend = function(data, options) {
-
     var schema = getSchema(data, options);
-
-    _.extend(schema.statics, {
-        stream: function(options){
-            if (!this.streamSchema) return null;
-
-            if (!options) {
-                var now = new Date();
-                options = { 'created' : { $gt : now }};
-            }
-
-            var stream = this.streamSchema
-                            .find(options)
-                            .tailable()
-                            .stream(); // start with events in last hour
-            return stream;
-        }
-    });
-
     return schema;
 }
 
