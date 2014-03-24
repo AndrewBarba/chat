@@ -60,5 +60,9 @@ exports.authToken = function() {
     return _this.guid(128);
 }
 
+exports.isValidEmail = function(e) {
+    return String(e).match(/^\s*[\w\-\+_]+(?:\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(?:\.[\w‌​\-\+_]+)*\s*$/);
+}
+
 // load all utils in this folder
 _.extend(module.exports, this.loadFiles(__dirname));

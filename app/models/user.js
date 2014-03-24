@@ -6,10 +6,14 @@ var mongoose = require("mongoose")
 
 var UserSchema = BaseSchema.extend({
     authToken   : { type: String, default: utils.authToken, required: true, select: false, index: { unique: true }},
-    phone       : { type: String, trim: true, set: setPhone, index: { unique: true, sparse: true }},
-    email       : { type: String, trim: true, lowercase: true, index: { unique: true, sparse: true }},
+    phone       : { type: String, trim: true, set: setPhone, index: { sparse: true }},
+    email       : { type: String, trim: true, set: setEmail, lowercase: true, index: { sparse: true }},
     firstName   : { type: String, trim: true },
-    lastName    : { type: String, trim: true }
+    lastName    : { type: String, trim: true },
+    verified    : { 
+        email: { type: Boolean, default: false },
+        phone: { type: Boolean, default: false }
+    }
 });
 
 /*******************************/
@@ -22,6 +26,12 @@ UserSchema
         return this.firstName + ' ' + this.lastName;
     });
 
+UserSchema
+    .virtual('isVerified')
+    .get(function() {
+        return this.verified.email || this.verified.phone;
+    });
+
 /*******************************/
 /* STATIC FUNCTIONS
 /*******************************/
@@ -29,7 +39,7 @@ UserSchema
 _.extend(UserSchema.statics, {
 
     findByAuthToken: function(auth, next) {
-        return User.findOne({ 'auth':auth }, next);
+        return User.findOne({ 'authToken':auth }, next);
     }, 
 
     findByPhone: function(phone, next) {
@@ -38,6 +48,39 @@ _.extend(UserSchema.statics, {
 
     findByEmail: function(email, next) {
         return User.findOne({ 'email':email }, next);
+    },
+
+    isEmailVerified: function(email, next) {
+        var query = {
+            'email': email,
+            '$or': getVerifyQuery()
+        }
+        return User.count(query, function(err, count){
+            if (err) return next(err);
+            next(null, (count > 0));
+        });
+    },
+
+    isPhoneVerified: function(phone, next) {
+        var query = {
+            'phone': phone,
+            '$or': getVerifyQuery()
+        }
+        return User.count(query, function(err, count){
+            if (err) return next(err);
+            next(null, (count > 0));
+        });
+    },
+
+    create: function(phone, email, first, last, next) {
+        var data = {
+            phone: phone,
+            email: email,
+            firstName: first,
+            lastName: last
+        }
+        var user = new User(data);
+        user.save(next);
     }
 
 });
@@ -48,6 +91,15 @@ module.exports = User;
 /*******************************/
 /* PRIVATE FUNCTIONS
 /*******************************/
+
+function getVerifyQuery() {
+    return [{ 'verified.email' : true },
+            { 'verified.phone' : true }]
+}
+
+function setEmail(email) {
+    return utils.isValidEmail(email) ? email.toLowerCase() : null;
+}
 
 function setPhone(phone) {
     if (phone) {
