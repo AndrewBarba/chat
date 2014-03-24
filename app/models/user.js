@@ -10,9 +10,24 @@ var UserSchema = BaseSchema.extend({
     email       : { type: String, trim: true, set: setEmail, lowercase: true, index: { sparse: true }},
     firstName   : { type: String, trim: true },
     lastName    : { type: String, trim: true },
-    verified    : { 
-        email: { type: Boolean, default: false },
-        phone: { type: Boolean, default: false }
+    facebook: {
+        id    : { type: String, index: { unique: true, sparse: true }},
+        token : { type: String, select: false }
+    },
+    twitter: {
+        id    : { type: String, index: { unique: true, sparse: true }},
+        token : { type: String, select: false }
+    },
+    google: {
+        id    : { type: String, index: { unique: true, sparse: true }},
+        token : { type: String, select: false }
+    },
+    verified: { 
+        email    : { type: Boolean, default: false },
+        phone    : { type: Boolean, default: false },
+        twitter  : { type: Boolean, default: false },
+        facebook : { type: Boolean, default: false },
+        google   : { type: Boolean, default: false }
     }
 });
 
@@ -29,7 +44,11 @@ UserSchema
 UserSchema
     .virtual('isVerified')
     .get(function() {
-        return this.verified.email || this.verified.phone;
+        return this.verified.email    || 
+               this.verified.phone    ||
+               this.verified.facebook ||
+               this.verified.twitter  ||
+               this.verified.google;  
     });
 
 /*******************************/
@@ -93,8 +112,11 @@ module.exports = User;
 /*******************************/
 
 function getVerifyQuery() {
-    return [{ 'verified.email' : true },
-            { 'verified.phone' : true }]
+    return [{ 'verified.email'    : true },
+            { 'verified.phone'    : true },
+            { 'verified.facebook' : true },
+            { 'verified.twitter'  : true },
+            { 'verified.google'   : true }]
 }
 
 function setEmail(email) {
