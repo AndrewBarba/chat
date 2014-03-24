@@ -6,28 +6,13 @@ var mongoose = require("mongoose")
 
 var UserSchema = BaseSchema.extend({
     authToken   : { type: String, default: utils.authToken, required: true, select: false, index: { unique: true }},
-    phone       : { type: String, trim: true, set: setPhone, index: { sparse: true }},
+    phone       : { type: String, trim: true, set: setPhone, required: true, index: { sparse: true }},
     email       : { type: String, trim: true, set: setEmail, lowercase: true, index: { sparse: true }},
     firstName   : { type: String, trim: true },
     lastName    : { type: String, trim: true },
-    facebook: {
-        id    : { type: String, index: { unique: true, sparse: true }},
-        token : { type: String, select: false }
-    },
-    twitter: {
-        id    : { type: String, index: { unique: true, sparse: true }},
-        token : { type: String, select: false }
-    },
-    google: {
-        id    : { type: String, index: { unique: true, sparse: true }},
-        token : { type: String, select: false }
-    },
-    verified: { 
-        email    : { type: Boolean, default: false },
-        phone    : { type: Boolean, default: false },
-        twitter  : { type: Boolean, default: false },
-        facebook : { type: Boolean, default: false },
-        google   : { type: Boolean, default: false }
+    verified    : { 
+        phone: { type: Boolean, default: false },
+        code: { type: String, trim: true, default: null, select: false }
     }
 });
 
@@ -44,11 +29,7 @@ UserSchema
 UserSchema
     .virtual('isVerified')
     .get(function() {
-        return this.verified.email    || 
-               this.verified.phone    ||
-               this.verified.facebook ||
-               this.verified.twitter  ||
-               this.verified.google;  
+        return this.verified.phone;
     });
 
 /*******************************/
@@ -58,65 +39,20 @@ UserSchema
 _.extend(UserSchema.statics, {
 
     findByAuthToken: function(auth, next) {
-        return User.findOne({ 'authToken':auth }, next);
+        return User
+                 .findOne({ 'authToken':auth })
+                 .select('+verified.code')
+                 .exec(next);
     }, 
 
     findByPhone: function(phone, next) {
         return User.findOne({ 'phone':phone }, next);
     }, 
 
-    findByEmail: function(email, next) {
-        return User.findOne({ 'email':email }, next);
-    },
-
-    isEmailVerified: function(email, next) {
-        var query = {
-            'email': email,
-            'verified.email': true
-        }
-        return User.count(query, function(err, count){
-            if (err) return next(err);
-            next(null, (count > 0));
-        });
-    },
-
-    isPhoneVerified: function(phone, next) {
+    isVerified: function(phone, next) {
         var query = {
             'phone': phone,
             'verified.phone': true
-        }
-        return User.count(query, function(err, count){
-            if (err) return next(err);
-            next(null, (count > 0));
-        });
-    },
-
-    isFacebookVerified: function(fbId, next) {
-        var query = {
-            'facebook.id': fbId,
-            'verified.facebook': true
-        }
-        return User.count(query, function(err, count){
-            if (err) return next(err);
-            next(null, (count > 0));
-        });
-    },
-
-    isTwitterVerified: function(twId, next) {
-        var query = {
-            'twitter.id': twId,
-            'verified.twitter': true
-        }
-        return User.count(query, function(err, count){
-            if (err) return next(err);
-            next(null, (count > 0));
-        });
-    },
-
-    isGoogleVerified: function(gId, next) {
-        var query = {
-            'google.id': gId,
-            'verified.google': true
         }
         return User.count(query, function(err, count){
             if (err) return next(err);
@@ -135,6 +71,29 @@ _.extend(UserSchema.statics, {
         user.save(next);
     }
 
+});
+
+_.extend(UserSchema.methods, {
+    
+    requestVerificationCode: function(next) {
+        var code = phoneVerificationCode();
+        this.verified.code = code;
+        this.save(function(err){
+            if (err) return next(err);
+            // send code via sms
+            next();
+        });
+    },
+
+    verify: function(code, next) {
+        if (this.verified.code == code) {
+            this.verified.phone = true;
+            this.verified.code = null;
+            this.save(next);
+        } else {   
+            return next(new Error('The codes do not match'));
+        }
+    }
 });
 
 var User = mongoose.model('User', UserSchema);
@@ -156,4 +115,8 @@ function setPhone(phone) {
         }
     }
     return (phone && phone.length >= 10) ? phone : null;
+}
+
+function phoneVerificationCode() {
+    return utils.randomNumberString(6);
 }

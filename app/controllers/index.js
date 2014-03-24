@@ -26,6 +26,8 @@ module.exports = function(app) {
     // user
     app.get('/user', auth.requireUser, controllers.user.getCurrentUser);
     app.post('/user', controllers.user.createUser);
+    app.get('/user/verify', auth.requireUser, controllers.user.requestVerificationCode);
+    app.put('/user/verify', auth.requireUser, controllers.user.verifyUser);
 
     // message stream
     sockets.listen('/message', auth.requireUser, controllers.message.messageStream);

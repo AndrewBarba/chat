@@ -7,7 +7,7 @@ var getUser = function(req, res, next) {
     if (auth && auth.length) {
         User.findByAuthToken(auth, function(err, doc){
             if (err) return next(err);
-            req.user = doc ? doc.toObject() : {};
+            req.user = doc || {};
             next();
         });
     } else {

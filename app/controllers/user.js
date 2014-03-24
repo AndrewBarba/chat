@@ -18,3 +18,18 @@ exports.createUser = function(req, res, next) {
         res.json(201, user);
     });
 }
+
+exports.requestVerificationCode = function(req, res, next) {
+    req.user.requestVerificationCode(function(err){
+        if (err) return next(err);
+        res.json({status:'success'});
+    });
+}
+
+exports.verifyUser = function(req, res, next) {
+    var code = req.body.code;
+    req.user.verify(code, function(err, user){
+        if (err) return next(err);
+        res.json(user);
+    });
+}
