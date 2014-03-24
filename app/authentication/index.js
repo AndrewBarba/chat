@@ -27,7 +27,7 @@ var requireUser = function(req, res, next) {
 
 var requireVerifiedUser = function(req, res, next) {
     requireUser(req, res, function(){
-        if (!req.user.isVerified) {
+        if (!req.user.verified) {
             return Errors.UnauthorizedError(res);
         } else {
             next();

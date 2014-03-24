@@ -9,7 +9,7 @@ var BASE_SCHEME = {
     created   : { type: Date, default: Date.now, set: setDate, get: getDate, index: true }
 }
 
-var HIDE = [ '__v', '__t', '_id' ];
+var HIDE = [ '__v', '__t', '_id', 'authToken', 'verificationCode' ];
 
 var OPTIONS = {
     virtuals: true,

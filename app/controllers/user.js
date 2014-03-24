@@ -6,30 +6,33 @@ exports.getCurrentUser = function(req, res, next) {
     res.json(req.user);
 }
 
-exports.createUser = function(req, res, next) {
-    
-    var email = req.body.email;
+exports.createUser = function(req, res, next) {    
     var phone = req.body.phone;
-    var first = req.body.firstName;
-    var last  = req.body.lastName;
-
-    User.create(phone, email, first, last, function(err, user){
+    User.create(phone, function(err, user, existed){
         if (err) return next(err);
-        res.json(201, user);
+        user.sendVerificationCode(function(err){
+            if (err) return next(err);
+            res.json(user);
+        });
     });
 }
 
-exports.requestVerificationCode = function(req, res, next) {
-    req.user.requestVerificationCode(function(err){
+exports.update = function(req, res, next) {
+    var phone = req.body.phone;
+    var name  = req.body.name;
+    req.user.update(phone, name, function(err, user){
         if (err) return next(err);
-        res.json({status:'success'});
+        res.json(user);
     });
 }
 
 exports.verifyUser = function(req, res, next) {
     var code = req.body.code;
-    req.user.verify(code, function(err, user){
+    var userId = req.params.id;
+    User.verify(code, userId, function(err, user){
         if (err) return next(err);
-        res.json(user);
+        res.json({
+            authToken: user.authToken
+        });
     });
 }

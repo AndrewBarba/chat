@@ -22,19 +22,26 @@ function TLWebSocket(path, verify) {
         var path = parsePath(ws.upgradeReq.url);
         if (_this.path == path) {
             var user = ws.upgradeReq.user;
-            _this.sockets[user.id] = ws; 
+            if (!_this.sockets[user.id]) {
+                _this.sockets[user.id] = [];
+            } 
+            _this.sockets[user.id].push(ws);
             utils.logger('New Socket Connection: '+path+' '+user.id);
         }
     });
 
     this.send = function(id, data) {
-        var ws = this.sockets[id];
-        send(ws, data);
+        var sockets = this.sockets[id];
+        _.each(sockets, function(socket){
+            send(socket, data);
+        });
     }
 
     this.broadcast = function(data) {
-        _.each(this.sockets, function(ws, id){
-            send(ws, data);
+        _.each(this.sockets, function(sockets, id){
+            _.each(sockets, function(socket){
+                send(socket, data);
+            });
         });
     }
 }
