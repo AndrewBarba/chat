@@ -20,7 +20,7 @@ module.exports = function() {
         require('./sockets').open(app.server);
 
         // load all of the models
-        require('./models')();
+        require('./models')(app);
 
         // load all of the controllers
         require('./controllers')(app);
