@@ -4,6 +4,7 @@ var mongoose = require("mongoose")
   , utils = require('../utils')
   , _ = require('underscore')
   , History = require('./history')
+  , User = require('./user')
 
 var scheme = {
     to: { type: String, ref: 'User', index: true, required: true },
@@ -28,15 +29,18 @@ MessageSchema.pre('save', function(next){
 });
 
 _.extend(MessageSchema.statics, {
-    create: function(to, from, message, next) {
-        var data = {
-            'to': to,
-            'from': from,
-            'message': message
-        };
+    create: function(to, from, text, next) {
+        User.count({_id:to}, function(err, count){
+            if (err) return next(err);
+            if (count <= 0) return next(new Error('Recipient not found'));
 
-        var message = new Message(data);
-        message.save(next);
+            var message = new Message({
+                to: to,
+                from: from,
+                message: text
+            });
+            message.save(next);
+        });
     },
 
     markReceived: function(messageId, userId, next) {
@@ -65,5 +69,4 @@ _.extend(MessageSchema.statics, {
 });
 
 var Message = mongoose.model('Message', MessageSchema);
-
 module.exports = Message;
