@@ -72,7 +72,7 @@ _.extend(UserSchema.statics, {
     isEmailVerified: function(email, next) {
         var query = {
             'email': email,
-            '$or': getVerifyQuery()
+            'verified.email': true
         }
         return User.count(query, function(err, count){
             if (err) return next(err);
@@ -83,7 +83,40 @@ _.extend(UserSchema.statics, {
     isPhoneVerified: function(phone, next) {
         var query = {
             'phone': phone,
-            '$or': getVerifyQuery()
+            'verified.phone': true
+        }
+        return User.count(query, function(err, count){
+            if (err) return next(err);
+            next(null, (count > 0));
+        });
+    },
+
+    isFacebookVerified: function(fbId, next) {
+        var query = {
+            'facebook.id': fbId,
+            'verified.facebook': true
+        }
+        return User.count(query, function(err, count){
+            if (err) return next(err);
+            next(null, (count > 0));
+        });
+    },
+
+    isTwitterVerified: function(twId, next) {
+        var query = {
+            'twitter.id': twId,
+            'verified.twitter': true
+        }
+        return User.count(query, function(err, count){
+            if (err) return next(err);
+            next(null, (count > 0));
+        });
+    },
+
+    isGoogleVerified: function(gId, next) {
+        var query = {
+            'google.id': gId,
+            'verified.google': true
         }
         return User.count(query, function(err, count){
             if (err) return next(err);
@@ -110,14 +143,6 @@ module.exports = User;
 /*******************************/
 /* PRIVATE FUNCTIONS
 /*******************************/
-
-function getVerifyQuery() {
-    return [{ 'verified.email'    : true },
-            { 'verified.phone'    : true },
-            { 'verified.facebook' : true },
-            { 'verified.twitter'  : true },
-            { 'verified.google'   : true }]
-}
 
 function setEmail(email) {
     return utils.isValidEmail(email) ? email.toLowerCase() : null;
