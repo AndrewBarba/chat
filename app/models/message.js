@@ -37,6 +37,26 @@ _.extend(MessageSchema.statics, {
 
         var message = new Message(data);
         message.save(next);
+    },
+
+    markReceived: function(messageId, next) {
+        var update = { received: true };
+        Message.findByIdAndUpdate(messageId, update, function(err, doc){
+            if (err) return next(err);
+            History.logMessage(doc, 'received', function(err){
+                next(null, doc);
+            });
+        });
+    },
+
+    markRead: function(messageId, next) {
+        var update = { read: true };
+        Message.findByIdAndUpdate(messageId, update, function(err, doc){
+            if (err) return next(err);
+            History.logMessage(doc, 'read', function(err){
+                next(null, doc);
+            });
+        });
     }
 });
 

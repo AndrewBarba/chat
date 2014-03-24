@@ -54,27 +54,17 @@ exports.sendMessage = function(req, res, next) {
 }
 
 exports.messageRecieved = function(req, res, next) {
-
     var messageId = req.params.id;
-    var update = { received: true };
-
-    Message.findByIdAndUpdate(messageId, update, function(err, doc){
+    Message.markReceived(messageId, function(err, doc){
         if (err) return next(err);
-        History.logMessage(doc, 'received', function(){
-            res.json(doc);
-        });
+        res.json(doc);
     });
 }
 
 exports.messageRead = function(req, res, next) {
-
     var messageId = req.params.id;
-    var update = { read: true };
-
-    Message.findByIdAndUpdate(messageId, update, function(err, doc){
+    Message.markRead(messageId, function(err, doc){
         if (err) return next(err);
-        History.logMessage(doc, 'read', function(){
-            res.json(doc);
-        });
+        res.json(doc);
     });
 }
