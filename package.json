@@ -2,7 +2,6 @@
     "name": "Chat",
     "version": "0.0.1",
     "description": "A fast chat server built with node.js and MongoDB",
-    "main": "cluster.js",
 
     "dependencies": {
         "ws": "latest",
@@ -15,6 +14,7 @@
     },
 
     "scripts": {
+        "start": "node cluster.js",
         "test": "test"
     },
 
