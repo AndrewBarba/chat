@@ -43,6 +43,12 @@ module.exports = function(app) {
         return Errors.NotFoundError(res);
     });
 
+    // error handling
+    app.use(function(err, req, res, next){
+        var code = err.statusCode || 500;
+        Errors.error(code, res, err.message, err.stack);
+    });
+
     return controllers;
 }
 

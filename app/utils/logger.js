@@ -4,7 +4,7 @@ var info = function(str) {
 }
 
 var error = function(str) {
-    throw new Error(str)
+    console.log('error: '+str);
 }
 
 var _this = info;

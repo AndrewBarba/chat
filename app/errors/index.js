@@ -1,4 +1,10 @@
 
+var init = function(code, message) {
+    var err = new Error(message);
+    err.statusCode = code || 500;
+    return err;
+}
+
 var error = function(code, res, message, data) {
     var e = {
         'error': message
@@ -35,7 +41,8 @@ var busyError = function(res, message, data) {
 }
 
 module.exports = {
-    Error: error,
+    init: init,
+    error: error,
     ServerError: serverError,
     BadRequestError: badRequestError,
     NotFoundError: notFoundError,

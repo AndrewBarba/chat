@@ -2,6 +2,7 @@ var mongoose = require("mongoose")
   , Schema = mongoose.Schema
   , BaseSchema = require('./_base')
   , utils = require('../utils')
+  , Errors = require('../errors')
   , _ = require('underscore')
   , History = require('./history')
   , User = require('./user')
@@ -33,7 +34,7 @@ _.extend(MessageSchema.statics, {
     create: function(to, from, text, next) {
         User.count({_id:to}, function(err, count){
             if (err) return next(err);
-            if (count <= 0) return next(new Error('Recipient not found'));
+            if (count <= 0) return next(Errors.init(400, 'Recipient not found'));
 
             var message = new Message({
                 to: to,
@@ -51,7 +52,7 @@ _.extend(MessageSchema.statics, {
             .populate('from to') 
             .exec(function(err, docs){
                 if (err) return next(err);
-                if (!docs) return next(new Error('You must be the reciever to mark a message as read'));
+                if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
                 async.each(docs, function(doc, done){
                     doc.received = true;
                     doc.save(done);
@@ -69,7 +70,7 @@ _.extend(MessageSchema.statics, {
             .populate('from to') 
             .exec(function(err, docs){
                 if (err) return next(err);
-                if (!docs) return next(new Error('You must be the reciever to mark a message as read'));
+                if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
                 async.each(docs, function(doc, done){
                     doc.received = true;
                     doc.read = true;
