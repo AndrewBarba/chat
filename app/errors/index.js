@@ -24,9 +24,15 @@ var unauthorizedError = function(res, message, data) {
     return error(401, res, message, data);
 }
 
+var busyError = function(res, message, data) {
+    message = message || 'Server busy';
+    return error(503, res, message, data);
+}
+
 module.exports = {
     Error: error,
     BadRequestError: badRequestError,
     NotFoundError: notFoundError,
-    UnauthorizedError: unauthorizedError
+    UnauthorizedError: unauthorizedError,
+    BusyError: busyError
 }

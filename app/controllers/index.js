@@ -3,12 +3,16 @@ var utils = require('../utils')
   , User = require('../models/user')
   , sockets = require('../sockets')
   , auth = require('../authentication')
+  , rateLimit = require('../services/ratelimit')
   , Errors = require('../errors')
+
+// load all controllers
+var controllers = utils.loadFiles(__dirname);
 
 module.exports = function(app) {
 
-    // load all controllers
-    var controllers = utils.loadFiles(__dirname);
+    // rate limit requests based on auth token
+    app.use(authRateLimit());
 
     // attempt to add user to all requests
     app.use(auth.getUser);
@@ -39,4 +43,15 @@ module.exports = function(app) {
     });
 
     return controllers;
+}
+
+function authRateLimit() {
+    return rateLimit(10, function(req, next){
+        var auth = req.query.auth || req.body.auth;
+        if (auth && auth.length) {
+            next(auth);
+        } else {
+            next(true);
+        }
+    });
 }

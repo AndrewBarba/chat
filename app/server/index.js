@@ -3,6 +3,7 @@ var express = require('express')
   , bodyParser = require('body-parser')
   , http = require('http')
   , utils = require('../utils')
+  , rateLimit = require('../services/ratelimit')
 
 module.exports = function() {
 
@@ -10,6 +11,7 @@ module.exports = function() {
     var app = express();
 
     // default middle ware
+    app.use(rateLimit(10));
     app.use(defaultHeaders);
 
     // parse request body

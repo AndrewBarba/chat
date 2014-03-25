@@ -3,6 +3,7 @@ var mongoose = require("mongoose")
   , BaseSchema = require('./_base')
   , utils = require('../utils')
   , _ = require('underscore')
+  , SMS = require('../services/sms')
 
 var UserSchema = BaseSchema.extend({
     authToken        : { type: String, default: utils.authToken, required: true, select: false, index: { unique: true }},
@@ -77,8 +78,12 @@ _.extend(UserSchema.methods, {
         this.verificationCode = code;
         this.save(function(err, user){
             if (err) return next(err);
-            // send code via sms
-            next();
+
+            var text = 'Code: '+code+'\nEnter the code above to verify your phone number';
+            SMS.sendText(user.phone, text, function(err){
+                if (err) return next(err);
+                next();
+            });
         });
     },
 
