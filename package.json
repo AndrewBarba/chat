@@ -10,7 +10,8 @@
         "body-parser": "latest",
         "mongoose": "latest",
         "async": "latest",
-        "underscore": "latest"
+        "underscore": "latest",
+        "twilio": "latest"
     },
 
     "scripts": {
