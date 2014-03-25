@@ -40,7 +40,7 @@ module.exports = function(app) {
 
     // respond to 404's
     app.use(function(req, res, next){
-        return Errors.NotFoundError(res);
+        Errors.NotFoundError(res);
     });
 
     // error handling
