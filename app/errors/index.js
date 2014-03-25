@@ -9,6 +9,11 @@ var error = function(code, res, message, data) {
     return res.json(code, e);
 }
 
+var serverError = function(res, message, data) {
+    message = message || 'Server error';
+    return error(500, res, message, data);
+}
+
 var badRequestError = function(res, message, data) {
     message = message || 'Bad request error';
     return error(400, res, message, data);
@@ -31,6 +36,7 @@ var busyError = function(res, message, data) {
 
 module.exports = {
     Error: error,
+    ServerError: serverError,
     BadRequestError: badRequestError,
     NotFoundError: notFoundError,
     UnauthorizedError: unauthorizedError,
