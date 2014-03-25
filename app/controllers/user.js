@@ -36,3 +36,11 @@ exports.verifyUser = function(req, res, next) {
         });
     });
 }
+
+exports.lookupNumbers = function(req, res, next) {
+    var numbers = req.body.numbers;
+    User.lookupNumbers(numbers, function(err, users){
+        if (err) return next(err);
+        res.json(users);
+    });
+}

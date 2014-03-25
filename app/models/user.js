@@ -1,4 +1,5 @@
-var mongoose = require("mongoose")
+
+var mongoose = require('mongoose')
   , Schema = mongoose.Schema
   , BaseSchema = require('./_base')
   , utils = require('../utils')
@@ -27,17 +28,23 @@ UserSchema.pre('save', function(next){
 _.extend(UserSchema.statics, {
 
     findByAuthToken: function(auth, next) {
-        return User
-                 .findOne({ 'authToken':auth })
-                 .exec(next);
+        return User.findOne({ 
+            'authToken': auth 
+        }, next);
     }, 
 
     lookup: function(phoneOrId, next) {
-        var query = {
+        return User.findOne({
             $or : [{ _id: phoneOrId },
                    { phone: phoneOrId }]
-        };
-        return User.findOne(query, next);
+        }, next);
+    },
+
+    lookupNumbers: function(numbers, next) {
+        numbers = _.map(numbers, setPhone);
+        return User.find({
+            phone : { $in: numbers }
+        }, next);
     },
 
     create: function(phone, next) {

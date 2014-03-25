@@ -33,6 +33,7 @@ module.exports = function(app) {
     app.put('/user', auth.requireUser, controllers.user.update);
     app.post('/user', controllers.user.createUser);
     app.put('/user/:id/verify', controllers.user.verifyUser);
+    app.post('/user/lookup', auth.requireVerifiedUser, controllers.user.lookupNumbers);
 
     // message stream
     sockets.listen('/message', auth.requireUser, controllers.message.messageStream);
@@ -44,6 +45,10 @@ module.exports = function(app) {
 
     return controllers;
 }
+
+/*******************/
+/* HELPERS
+/*******************/
 
 function authRateLimit() {
     return rateLimit(10, function(req, next){
