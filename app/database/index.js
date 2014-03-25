@@ -5,7 +5,7 @@ var mongoose = require('mongoose')
 
 module.exports = function(next, disconnect) {
 
-    // Setup DB connection based on config file
+    // connection options
     var dbOptions = {
         server: {
             socketOptions : { keepAlive : 1 } // keep the connection open even if inactive
