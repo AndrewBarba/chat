@@ -1,7 +1,7 @@
 {
     "name": "Chat",
-    "version": "0.0.1",
-    "description": "A fast chat server built with node.js and MongoDB",
+    "version": "0.1.2",
+    "description": "A super fast, realtime chat server built with Node.js and MongoDB ",
 
     "dependencies": {
         "ws": "latest",
