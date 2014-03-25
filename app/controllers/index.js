@@ -23,8 +23,8 @@ module.exports = function(app) {
 
     // messages
     app.post('/message', auth.requireVerifiedUser, controllers.message.sendMessage);
-    app.put('/message/:id/received', auth.requireUser, controllers.message.messageRecieved);
-    app.put('/message/:id/read', auth.requireUser, controllers.message.messageRead);
+    app.put('/message/received', auth.requireUser, controllers.message.markMessagesRecieved);
+    app.put('/message/read', auth.requireUser, controllers.message.markMessagesRead);
     app.get('/message/new', auth.requireUser, controllers.message.getUnreadMessages);
     app.get('/message/user/:id', auth.requireUser, controllers.message.getMessagesFromUser);
 

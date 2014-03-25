@@ -5,17 +5,17 @@ var mongoose = require('mongoose')
 
 var BASE_SCHEME = {
     _id       : { type: String, default: utils.objectId, index: { unique: true } },
-    modified  : { type: Date, default: Date.now, set: setDate, get: getDate },
     created   : { type: Date, default: Date.now, set: setDate, get: getDate, index: true }
 }
 
-var HIDE = [ '__v', '__t', '_id', 'authToken', 'verificationCode' ];
+var HIDE = [ '__v', '__t', '_id' ];
 
 var OPTIONS = {
     virtuals: true,
     getters: true,
     transform: function(doc, ret, options) {
-        HIDE.forEach(function(key){
+        var hide = HIDE.concat(doc.getHideKeys());
+        hide.forEach(function(key){
             delete ret[key]
         });
     }
@@ -33,10 +33,10 @@ function getSchema(data, options) {
     var scheme = _.extend({}, BASE_SCHEME, data);
     var schema = new Schema(scheme, defaultOptions(options));
 
-    // always update modified date on save
-    schema.pre('save', function(next) {
-        if (this.isModified()) this.modified = Date.now();
-        next();
+    _.extend(schema.methods, {
+        getHideKeys: function() {
+            return []; // override
+        }
     });
 
     return schema;

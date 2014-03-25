@@ -5,13 +5,14 @@ var mongoose = require("mongoose")
   , _ = require('underscore')
   , History = require('./history')
   , User = require('./user')
+  , async = require('async')
 
 var scheme = {
     to: { type: String, ref: 'User', index: true, required: true },
     from: { type: String, ref: 'User', index: true, required: true },
     message: { type: String, trim: true, required: true },
-    received: { type: Boolean, default: false },
-    read: { type: Boolean, default: false }
+    received: { type: Boolean, default: false, index: true },
+    read: { type: Boolean, default: false, index: true }
 }
 
 var MessageSchema = BaseSchema.extend(scheme);
@@ -19,10 +20,10 @@ var MessageSchema = BaseSchema.extend(scheme);
 MessageSchema.pre('save', function(next){
     if (this.isNew) {
         History.logMessage(this, 'send', next);
-    } else if (this.isModified('received')) {
-        History.logMessage(this, 'received', next);
     } else if (this.isModified('read')) {
         History.logMessage(this, 'read', next);
+    } else if (this.isModified('received')) {
+        History.logMessage(this, 'received', next);
     } else {
         next();
     }
@@ -43,30 +44,44 @@ _.extend(MessageSchema.statics, {
         });
     },
 
-    markReceived: function(messageId, userId, next) {
-        var query = { _id: messageId, to: userId };
-        var update = { received: true };
-        Message.findOneAndUpdate(query, update, function(err, doc){
-            if (err) return next(err);
-            if (!doc) return next(new Error('You must be the reciever to mark a message as received'));
-            History.logMessage(doc, 'received', function(err){
-                next(null, doc);
+    markReceived: function(messageIds, userId, next) {
+        var query = { to: userId, _id : { $in: messageIds } };
+        Message
+            .find(query)
+            .populate('from to') 
+            .exec(function(err, docs){
+                if (err) return next(err);
+                if (!docs) return next(new Error('You must be the reciever to mark a message as read'));
+                async.each(docs, function(doc, done){
+                    doc.received = true;
+                    doc.save(done);
+                }, function(err){
+                    if (err) return next(err);
+                    next(null, docs);
+                });
             });
-        });
     },
 
-    markRead: function(messageId, userId, next) {
-        var query = { _id: messageId, to: userId };
-        var update = { read: true };
-        Message.findOneAndUpdate(query, update, function(err, doc){
-            if (err) return next(err);
-            if (!doc) return next(new Error('You must be the reciever to mark a message as read'));
-            History.logMessage(doc, 'read', function(err){
-                next(null, doc);
+    markRead: function(messageIds, userId, next) {
+        var query = { to: userId, _id : { $in: messageIds } };
+        Message
+            .find(query)
+            .populate('from to') 
+            .exec(function(err, docs){
+                if (err) return next(err);
+                if (!docs) return next(new Error('You must be the reciever to mark a message as read'));
+                async.each(docs, function(doc, done){
+                    doc.received = true;
+                    doc.read = true;
+                    doc.save(done);
+                }, function(err){
+                    if (err) return next(err);
+                    next(null, docs);
+                });
             });
-        });
     }
 });
 
 var Message = mongoose.model('Message', MessageSchema);
 module.exports = Message;
+

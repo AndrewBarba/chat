@@ -16,11 +16,14 @@ var HistorySchema = BaseSchema.cappedSchema(scheme, (64 * 1024 * 1024)); // 64 m
 _.extend(HistorySchema.statics, {
 
     logMessage: function(message, action, next) {
-        var history = new History({
-            message: message.toObject(),
-            action: action
+        message.populate('from to', function(err, doc){
+            var history = new History({
+                message: doc.toObject(),
+                action: action
+            });
+            console.log(doc);
+            history.save(next);
         });
-        history.save(next);
     },
 
     stream: function(){

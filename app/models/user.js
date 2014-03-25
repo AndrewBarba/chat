@@ -102,6 +102,10 @@ _.extend(UserSchema.methods, {
             this.name = name;
         }
         this.save(next);
+    },
+
+    getHideKeys: function() {
+        return [ 'authToken', 'verificationCode' ];
     }
 });
 
@@ -125,3 +129,4 @@ function setPhone(phone) {
 function phoneVerificationCode() {
     return utils.randomNumberString(6);
 }
+

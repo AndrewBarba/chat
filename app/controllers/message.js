@@ -58,18 +58,18 @@ exports.sendMessage = function(req, res, next) {
     });
 }
 
-exports.messageRecieved = function(req, res, next) {
-    var messageId = req.params.id;
-    Message.markReceived(messageId, req.user.id, function(err, doc){
+exports.markMessagesRecieved = function(req, res, next) {
+    var messageIds = req.body.messages;
+    Message.markReceived(messageIds, req.user.id, function(err, docs){
         if (err) return next(err);
-        res.json(doc);
+        res.json(docs);
     });
 }
 
-exports.messageRead = function(req, res, next) {
-    var messageId = req.params.id;
-    Message.markRead(messageId, req.user.id, function(err, doc){
+exports.markMessagesRead = function(req, res, next) {
+    var messageIds = req.body.messages;
+    Message.markRead(messageIds, req.user.id, function(err, docs){
         if (err) return next(err);
-        res.json(doc);
+        res.json(docs);
     });
 }
