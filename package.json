@@ -3,6 +3,10 @@
     "version": "0.1.2",
     "description": "A super fast, realtime chat server built with Node.js and MongoDB ",
 
+    "engines" : {
+        "node" : "0.11.x"
+    },
+
     "dependencies": {
         "ws": "latest",
         "express": "4.x",
