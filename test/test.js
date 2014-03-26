@@ -86,7 +86,7 @@ describe('Chat', function(){
                 });
             });
 
-            it('should create a seconduser', function(done){
+            it('should create a second user', function(done){
                 User.create(u2_phone, function(err, user){
                     should.not.exist(err);
                     should.exist(user);
@@ -156,7 +156,7 @@ describe('Chat', function(){
         });
 
         describe('Auth', function(){
-            it('should find user via auth token', function(done){
+            it('should find user by auth token', function(done){
                 User.findByAuthToken(u1_auth, function(err, user){
                     should.not.exist(err);
                     should.exist(user);
@@ -205,7 +205,7 @@ describe('Chat', function(){
                 });
             });
 
-            it('should fail to send to non user', function(done){
+            it('should fail to send to non-user', function(done){
                 Message.create('xxx', u1, 'xxx', function(err, message){
                     should.exist(err);
                     should.not.exist(message);
