@@ -19,12 +19,14 @@
     },
 
     "devDependencies": {
-        "mocha": "latest"
+        "mocha": "latest",
+        "should": "latest",
+        "supertest": "latest"
     },
 
     "scripts": {
         "start": "node cluster.js",
-        "test": "test"
+        "test": "mocha"
     },
 
     "author": "Andrew Barba",

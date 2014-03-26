@@ -22,7 +22,7 @@ module.exports = function(next) {
     var port = process.env.PORT || 3000;
     server.listen(port, function() {
         utils.logger.info('Listening on port: '+port);
-        if (next) next();
+        if (next) next(app);
     });
 
     app.server = server;

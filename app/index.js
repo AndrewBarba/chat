@@ -20,9 +20,9 @@ module.exports = function(next) {
         require('./sockets').open(app.server);
 
         // load all of the models
-        require('./models')(app);
+        app.models = require('./models')(app);
 
         // load all of the controllers
-        require('./controllers')(app);
+        app.controllers = require('./controllers')(app);
     });
 }

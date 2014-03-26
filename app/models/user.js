@@ -89,18 +89,22 @@ _.extend(UserSchema.methods, {
             var text = 'Code: '+code+'\nEnter the code above to verify your phone number';
             SMS.sendText(user.phone, text, function(err){
                 if (err) return next(err);
-                next();
+                next(null, code);
             });
         });
     },
 
     update: function(phone, name, next) {
-        if (setPhone(phone)) {
-            this.phone = setPhone(phone);
+        
+        phone = setPhone(phone);
+        if (phone) {
+            this.phone = phone;
         }
+
         if (name && name.length) {
             this.name = name;
         }
+        
         this.save(next);
     },
 

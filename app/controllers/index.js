@@ -6,10 +6,10 @@ var utils = require('../utils')
   , rateLimit = require('../services/ratelimit')
   , Errors = require('../errors')
 
-// load all controllers
-var controllers = utils.loadFiles(__dirname);
-
 module.exports = function(app) {
+
+    // load all controllers
+    var controllers = utils.loadFiles(__dirname);
 
     // rate limit requests based on auth token
     app.use(authRateLimit());
