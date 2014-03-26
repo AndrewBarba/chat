@@ -46,9 +46,9 @@ describe('Chat Test', function(){
         });
     });
 
-    // after(function(done){
-    //     mongoose.connection.db.dropDatabase(done);
-    // });
+    after(function(done){
+        mongoose.connection.db.dropDatabase(done);
+    });
 
     // Database
     describe('Database Tests', function(){
@@ -65,7 +65,6 @@ describe('Chat Test', function(){
                 User.create(u1_phone, function(err, user){
                     should.not.exist(err);
                     should.exist(user);
-                    should.not.exist(user.authToken);
                     user.phone.should.equal(u1_phone);
                     u1 = user;
                     done();
@@ -87,7 +86,6 @@ describe('Chat Test', function(){
                 User.create(u2_phone, function(err, user){
                     should.not.exist(err);
                     should.exist(user);
-                    should.not.exist(user.authToken);
                     user.phone.should.equal(u2_phone);
                     user.id.should.not.equal(u1.id);
                     u2 = user;
@@ -147,6 +145,7 @@ describe('Chat Test', function(){
                     should.exist(user.authToken);
                     user.verified.should.be.true;
                     u1_auth = user.authToken;
+                    u1 = user;
                     done();
                 });
             });
