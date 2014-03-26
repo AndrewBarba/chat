@@ -25,7 +25,7 @@
 
     "scripts": {
         "start": "node cluster.js",
-        "test": "mocha"
+        "test": "mocha --timeout 10000"
     },
 
     "author": "Andrew Barba",
