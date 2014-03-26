@@ -244,62 +244,57 @@ describe('Chat', function(){
     // History
     describe('History Tests', function(){
 
-        it('should not be empty', function(done){
-            History.find({}, function(err, docs){
-                should.not.exist(err);
-                should.exist(docs);
-                docs.length.should.not.equal(0);
-                done();
+        describe('Find', function(){
+            it('should not be empty', function(done){
+                History.find({}, function(err, docs){
+                    should.not.exist(err);
+                    should.exist(docs);
+                    docs.length.should.not.equal(0);
+                    done();
+                });
             });
         });
 
-        it('should stream new message', function(done){
-            var _done = false;
-            History.stream(function(data){
-                should.exist(data);
-                data.message.to.id.should.equal(u2.id);
-                if (!_done) {
-                    _done = true;
+        describe('Stream', function(){
+            it('should stream new message', function(done){
+                var s = History.stream(function(data){
+                    s.destroy();
+                    should.exist(data);
+                    data.message.to.id.should.equal(u2.id);
                     done();
-                }
+                });
+                Message.create(u2.id, u1, m1_text, function(err, message){
+                    should.not.exist(err);
+                    should.exist(message);
+                    m2 = message;
+                });
             });
-            Message.create(u2.id, u1, m1_text, function(err, message){
-                should.not.exist(err);
-                should.exist(message);
-                m2 = message;
-            });
-        });
 
-        it('should stream received message', function(done){
-            var _done = false;
-            History.stream(function(data){
-                should.exist(data);
-                data.message.received.should.be.true;
-                if (!_done) {
-                    _done = true;
+            it('should stream received message', function(done){
+                var s = History.stream(function(data){
+                    s.destroy();
+                    should.exist(data);
+                    data.message.received.should.be.true;
                     done();
-                }
+                });
+                Message.markReceived([m2], u2.id, function(err, docs){
+                    should.not.exist(err);
+                    should.exist(docs);
+                });
             });
-            Message.markReceived([m2], u2.id, function(err, docs){
-                should.not.exist(err);
-                should.exist(docs);
-            });
-        });
 
-        it('should stream read message', function(done){
-            var _done = false;
-            History.stream(function(data){
-                should.exist(data);
-                data.message.received.should.be.true;
-                data.message.read.should.be.true;
-                if (!_done) {
-                    _done = true;
+            it('should stream read message', function(done){
+                var s = History.stream(function(data){
+                    s.destroy();
+                    should.exist(data);
+                    data.message.received.should.be.true;
+                    data.message.read.should.be.true;
                     done();
-                }
-            });
-            Message.markRead([m2], u2.id, function(err, docs){
-                should.not.exist(err);
-                should.exist(docs);
+                });
+                Message.markRead([m2], u2.id, function(err, docs){
+                    should.not.exist(err);
+                    should.exist(docs);
+                });
             });
         });
     });
