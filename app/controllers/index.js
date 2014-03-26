@@ -5,6 +5,7 @@ var utils = require('../utils')
   , auth = require('../authentication')
   , rateLimit = require('../services/ratelimit')
   , Errors = require('../errors')
+  , multipart = require('connect-multiparty')
 
 module.exports = function(app) {
 
@@ -34,6 +35,9 @@ module.exports = function(app) {
     app.post('/user', controllers.user.createUser);
     app.put('/user/:id/verify', controllers.user.verifyUser);
     app.post('/user/lookup', auth.requireVerifiedUser, controllers.user.lookupNumbers);
+
+    // upload files
+    app.post('/upload', auth.requireVerifiedUser, multipart(), controllers.upload.upload);
 
     // message stream
     sockets.listen('/message', auth.requireUser, controllers.message.messageStream);

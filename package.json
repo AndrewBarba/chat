@@ -15,7 +15,8 @@
         "mongoose": "latest",
         "async": "latest",
         "underscore": "latest",
-        "twilio": "latest"
+        "twilio": "latest",
+        "connect-multiparty": "latest"
     },
 
     "devDependencies": {
