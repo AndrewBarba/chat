@@ -48,7 +48,7 @@ exports.getMessagesFromUser = function(req, res, next) {
 
 exports.sendMessage = function(req, res, next) {
 
-    var from = req.user.id;
+    var from = req.user;
     var text = req.body.message;
     var to = req.body.to;
 

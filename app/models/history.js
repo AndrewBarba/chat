@@ -21,7 +21,6 @@ _.extend(HistorySchema.statics, {
                 message: doc.toObject(),
                 action: action
             });
-            console.log(doc);
             history.save(next);
         });
     },

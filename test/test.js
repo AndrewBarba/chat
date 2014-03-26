@@ -25,6 +25,10 @@ var u2 = null;
 var u2_phone = '5550005555';
 var u2_name = 'Test test';
 
+// message 1
+var m1 = null;
+var m1_text = 'test 1';
+
 /*****************************
              TESTS
 ******************************/
@@ -47,14 +51,14 @@ describe('Chat Test', function(){
     // });
 
     // Database
-    describe('Database connection', function(){
+    describe('Database Tests', function(){
         it('should be conntected to the database', function(){
             mongoose.connection.readyState.should.equal(1);
         });
     });
 
     // User
-    describe('User tests', function(){
+    describe('User Tests', function(){
 
         describe('Create', function(){
             it('should create a user', function(done){
@@ -172,5 +176,82 @@ describe('Chat Test', function(){
             });
         });
     });
+
+    // Message
+    describe('Message Tests', function(){
+
+        describe('Send', function(){
+            it('should send a message', function(done){
+                Message.create(u2.id, u1, m1_text, function(err, message){
+                    should.not.exist(err);
+                    should.exist(message);
+                    message.to.id.should.equal(u2.id);
+                    message.from.id.should.equal(u1.id);
+                    message.message.should.equal(m1_text);
+                    m1 = message;
+                    done();
+                });
+            });
+
+            it('should fail to send from unverified user', function(done){
+                Message.create(u1.id, u2, 'xxx', function(err, message){
+                    should.exist(err);
+                    should.not.exist(message);
+                    done();
+                });
+            });
+
+            it('should fail to send to non user', function(done){
+                Message.create('xxx', u1, 'xxx', function(err, message){
+                    should.exist(err);
+                    should.not.exist(message);
+                    done();
+                });
+            });
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 });

@@ -31,13 +31,16 @@ MessageSchema.pre('save', function(next){
 });
 
 _.extend(MessageSchema.statics, {
-    create: function(to, from, text, next) {
-        User.count({_id:to}, function(err, count){
+    create: function(toId, from, text, next) {
+        if (!from.verified) {
+            return next(Errors.init(401, 'You must be a verified user.'));
+        }
+        User.findOne({_id:toId}, function(err, user){
             if (err) return next(err);
-            if (count <= 0) return next(Errors.init(400, 'Recipient not found'));
+            if (!user) return next(Errors.init(400, 'Recipient not found'));
 
             var message = new Message({
-                to: to,
+                to: user,
                 from: from,
                 message: text
             });
@@ -47,39 +50,33 @@ _.extend(MessageSchema.statics, {
 
     markReceived: function(messageIds, userId, next) {
         var query = { to: userId, _id : { $in: messageIds } };
-        Message
-            .find(query)
-            .populate('from to') 
-            .exec(function(err, docs){
+        Message.find(query, function(err, docs){
+            if (err) return next(err);
+            if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
+            async.each(docs, function(doc, done){
+                doc.received = true;
+                doc.save(done);
+            }, function(err){
                 if (err) return next(err);
-                if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
-                async.each(docs, function(doc, done){
-                    doc.received = true;
-                    doc.save(done);
-                }, function(err){
-                    if (err) return next(err);
-                    next(null, docs);
-                });
+                next(null, docs);
             });
+        });
     },
 
     markRead: function(messageIds, userId, next) {
         var query = { to: userId, _id : { $in: messageIds } };
-        Message
-            .find(query)
-            .populate('from to') 
-            .exec(function(err, docs){
+        Message.find(query, function(err, docs){
+            if (err) return next(err);
+            if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
+            async.each(docs, function(doc, done){
+                doc.received = true;
+                doc.read = true;
+                doc.save(done);
+            }, function(err){
                 if (err) return next(err);
-                if (!docs) return next(Errors.init(400, 'You must be the reciever to mark a message as read'));
-                async.each(docs, function(doc, done){
-                    doc.received = true;
-                    doc.read = true;
-                    doc.save(done);
-                }, function(err){
-                    if (err) return next(err);
-                    next(null, docs);
-                });
+                next(null, docs);
             });
+        });
     }
 });
 
