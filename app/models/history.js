@@ -25,12 +25,13 @@ _.extend(HistorySchema.statics, {
         });
     },
 
-    stream: function(){
+    stream: function(ondata){
         var now = Date.now();
         var stream = this
                         .find({created:{$gt:now}})
                         .tailable()
                         .stream(); // start with events in last hour
+        if (ondata) stream.on('data', ondata);
         return stream;
     }
 });
