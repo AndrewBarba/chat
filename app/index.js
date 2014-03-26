@@ -1,7 +1,7 @@
 
 var utils = require('./utils');
 
-module.exports = function() {
+module.exports = function(next) {
     
     utils.logger.info('Starting app...');
 
@@ -14,7 +14,7 @@ module.exports = function() {
         utils.logger.info('Connected to database');
 
         // start the server
-        var app = require('./server')();
+        var app = require('./server')(next);
 
         // open up sockets
         require('./sockets').open(app.server);

@@ -5,7 +5,7 @@ var express = require('express')
   , utils = require('../utils')
   , rateLimit = require('../services/ratelimit')
 
-module.exports = function() {
+module.exports = function(next) {
 
     // create express app
     var app = express();
@@ -21,7 +21,8 @@ module.exports = function() {
     var server = http.createServer(app);
     var port = process.env.PORT || 3000;
     server.listen(port, function() {
-        utils.logger('Listening on port: '+port)
+        utils.logger.info('Listening on port: '+port);
+        if (next) next();
     });
 
     app.server = server;

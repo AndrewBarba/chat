@@ -18,6 +18,10 @@
         "twilio": "latest"
     },
 
+    "devDependencies": {
+        "mocha": "latest"
+    },
+
     "scripts": {
         "start": "node cluster.js",
         "test": "test"
