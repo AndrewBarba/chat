@@ -29,11 +29,15 @@ var u2_name = 'Test test';
 var m1 = null;
 var m1_text = 'test 1';
 
+// message 2
+var m2 = null;
+var m2_text = 'test 2';
+
 /*****************************
              TESTS
 ******************************/
 
-describe('Chat Test', function(){
+describe('Chat', function(){
 
     var User, Message, History;
 
@@ -233,6 +237,69 @@ describe('Chat Test', function(){
                     docs[0].read.should.be.true;
                     done();
                 });
+            });
+        });
+    });
+
+    // History
+    describe('History Tests', function(){
+
+        it('should not be empty', function(done){
+            History.find({}, function(err, docs){
+                should.not.exist(err);
+                should.exist(docs);
+                docs.length.should.not.equal(0);
+                done();
+            });
+        });
+
+        it('should stream new message', function(done){
+            var _done = false;
+            History.stream(function(data){
+                should.exist(data);
+                data.message.to.id.should.equal(u2.id);
+                if (!_done) {
+                    _done = true;
+                    done();
+                }
+            });
+            Message.create(u2.id, u1, m1_text, function(err, message){
+                should.not.exist(err);
+                should.exist(message);
+                m2 = message;
+            });
+        });
+
+        it('should stream received message', function(done){
+            var _done = false;
+            History.stream(function(data){
+                should.exist(data);
+                data.message.received.should.be.true;
+                if (!_done) {
+                    _done = true;
+                    done();
+                }
+            });
+            Message.markReceived([m2], u2.id, function(err, docs){
+                should.not.exist(err);
+                should.exist(docs);
+            });
+        });
+
+        it('should stream read message', function(done){
+            var _done = false;
+            History.stream(function(data){
+                should.exist(data);
+                data.message.received.should.be.true;
+                data.message.read.should.be.true;
+                if (!_done) {
+                    _done = true;
+                    done();
+                }
+            });
+            Message.markRead([m2], u2.id, function(err, docs){
+                should.not.exist(err);
+                should.exist(docs);
             });
         });
     });

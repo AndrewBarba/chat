@@ -51,11 +51,12 @@ exports.sendMessage = function(req, res, next) {
     var from = req.user;
     var text = req.body.message;
     var to = req.body.to;
+    var attachment = req.body.attachment;
 
     Message.create(to, from, text, function(err, doc){
         if (err) return next(err);
         res.json(201, doc);
-    });
+    }, attachment);
 }
 
 exports.markMessagesRecieved = function(req, res, next) {

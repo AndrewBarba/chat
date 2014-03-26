@@ -13,7 +13,8 @@ var scheme = {
     from: { type: String, ref: 'User', index: true, required: true },
     message: { type: String, trim: true, required: true },
     received: { type: Boolean, default: false, index: true },
-    read: { type: Boolean, default: false, index: true }
+    read: { type: Boolean, default: false, index: true },
+    attachment: { type: String, trim: true } // url to attached file
 }
 
 var MessageSchema = BaseSchema.extend(scheme);
@@ -31,7 +32,7 @@ MessageSchema.pre('save', function(next){
 });
 
 _.extend(MessageSchema.statics, {
-    create: function(toId, from, text, next) {
+    create: function(toId, from, text, next, attachment) {
         if (!from.verified) {
             return next(Errors.init(401, 'You must be a verified user.'));
         }
@@ -42,7 +43,8 @@ _.extend(MessageSchema.statics, {
             var message = new Message({
                 to: user,
                 from: from,
-                message: text
+                message: text,
+                attachment: attachment
             });
             message.save(next);
         });
