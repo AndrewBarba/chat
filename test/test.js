@@ -118,7 +118,8 @@ describe('Chat Test', function(){
             });
 
             it('should find multiple users', function(done){
-                User.lookupNumbers([u1_phone, u2_phone, 'xxx'], function(err, users){
+                var numbers = [u1_phone, u2_phone, 'xxx'];
+                User.lookupNumbers(numbers, function(err, users){
                     should.not.exist(err);
                     should.exist(users);
                     users.length.should.equal(2);
@@ -209,49 +210,32 @@ describe('Chat Test', function(){
                 });
             });
         });
+
+        describe('Received', function(){
+            it('should mark message received', function(done){
+                Message.markReceived([m1], u2.id, function(err, docs){
+                    should.not.exist(err);
+                    should.exist(docs);
+                    docs.length.should.equal(1);
+                    docs[0].received.should.be.true;
+                    docs[0].read.should.be.false;
+                    done();
+                });
+            });
+        });
+
+        describe('Read', function(){
+            it('should mark message read', function(done){
+                Message.markRead([m1], u2.id, function(err, docs){
+                    should.not.exist(err);
+                    should.exist(docs);
+                    docs.length.should.equal(1);
+                    docs[0].received.should.be.true;
+                    docs[0].read.should.be.true;
+                    done();
+                });
+            });
+        });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 });
